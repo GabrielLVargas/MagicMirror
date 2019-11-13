@@ -1,13 +1,29 @@
 from __future__ import print_function
 import cv2 as cv
 import testeprint
+import numpy as np
+import requests
+import RPi.GPIO as gpio
+import time
+import os
+gpio.setmode(gpio.BCM)
+gpio.setup(11, gpio.IN, pull_up_down = gpio.PUD_UP)
+soma = 0
+alpha = 1.0
 
-alpha = 0.7
+
+#zerando o valor 
+
+
 # [load]
 img_counter = 0
 #x = "opencv_frame_{}.jpg".format(img_counter)
 src1 = cv.imread(testeprint.img_name)
-src2 = cv.imread('ghost.jpg')
+src2 = cv.imread('camisa2.png')
+src3 = cv.imread('roupanova4.png')
+src4 = cv.imread('roupanova5.png')
+src5 = cv.imread('roupanova6.png')
+src6 = cv.imread('roupanova1.png')
 # [load]
 if src1 is None:
     print("Error loading src1")
@@ -15,12 +31,108 @@ if src1 is None:
 elif src2 is None:
     print("Error loading src2")
     exit(-1)
+elif src3 is None:
+    print("Error loading src3")
+    exit(-1)
+elif src4 is None:
+    print("Error loading src4")
+    exit(-1)
+elif src5 is None:
+    print("Error loading src5")
+    exit(-1)
+elif src6 is None:
+    print("Error loading src6")
+    exit(-1)
 # [blend_images]
-beta = (1.0 - alpha)
+beta = 1.0
+# [blend_images]
+# [display]
+
 dst = cv.addWeighted(src1, alpha, src2, beta, 0.0)
+dst2 = cv.addWeighted(src1, alpha, src3, beta, 0.0) 
+dst3 = cv.addWeighted(src1, alpha, src4, beta, 0.0) 
+dst4 = cv.addWeighted(src1, alpha, src5, beta, 0.0) 
+dst5 = cv.addWeighted(src1, alpha, src6, beta, 0.0) 
 # [blend_images]
 # [display]
-cv.imshow('dst', dst)
-cv.waitKey(0)
-# [display]
-cv.destroyAllWindows()
+    
+#numpy_vertical = np.vstack((dst, dst2))
+numpy_horizontal = np.hstack((dst, dst2))
+numpy_horizontal2 = np.hstack((dst3, dst4))
+#numpy_horizontal3 = np.hstack((dst5, dst6)) falta o dst6
+
+#cv.imshow('Provador Aumentado', dst)
+#cv.imshow('Numpy Vertical', numpy_vertical)
+cv.imshow('Pecas 1 e 2', numpy_horizontal)
+cv.imshow('Pecas 3 e 4', numpy_horizontal2)
+
+#numpy_vertical_concat = np.concatenate((testeprint.img_name, dst2), axis=0)
+#numpy_horizontal_concat = np.concatenate((testeprint.img_name, dst3), axis=1)
+try:
+ while True:
+    if(gpio.input(11) == 1):
+        print("Esperando resposta do usuário")
+    else:
+        
+        soma = 1
+        print("Começando a contagem")
+        url = "https://industrial.api.ubidots.com/api/v1.6/devices/controlador/nivel/values/"
+
+        payload = "{\n\t\"value\": %f\n}" % (soma)
+        headers = {
+            'x-auth-token': "BBFF-CEOQq4cN2ykAX7BFVv9hLBjSCWAZXA",
+            'content-type': "application/json",
+            'cache-control': "no-cache",
+            'postman-token': "e5fbf09f-d42f-0816-737a-c8f0fbead533"
+            }
+
+        response = requests.request("POST", url, data=payload, headers=headers)
+
+        #cv.imshow('Provador Aumentado', dst)
+        #cv.imshow('Numpy Vertical', numpy_vertical)
+        #cv.imshow('Numpy Horizontal', numpy_horizontal)
+        #cv.imshow('Numpy Horizontal2', numpy_horizontal2)
+        
+        exec(open('postbotaoroupa_ubidots.py'))
+        
+        url = "http://api.openweathermap.org/data/2.5/weather"
+
+        querystring = {"name":"Sao Caetano do Sul","APPID":"305e50cf8434707ead5c2939ba6c983b","id":"3449324","country":"BR"}
+
+        headers = {
+            'cache-control': "no-cache",
+            'postman-token': "6e49bc69-3ca4-3c36-fb2a-d42301ca2408"
+            }
+
+        response = requests.request("GET", url, headers=headers, params=querystring)
+
+        temp = float(response.json()["main"]["temp"]) - 273.15
+
+
+        url = "https://industrial.api.ubidots.com/api/v1.6/devices/controlador/temperatura/values/"
+
+        payload = "{\n\t\"value\": %f\n}" % (temp)
+        headers = {
+            'x-auth-token': "BBFF-CEOQq4cN2ykAX7BFVv9hLBjSCWAZXA",
+            'content-type': "application/json",
+            'cache-control': "no-cache",
+            'postman-token': "33c90948-f8d7-bdcc-ba78-3a7ca23b28f4"
+            }
+
+        response = requests.request("POST", url, data=payload, headers=headers)
+
+        print(response.text)
+
+
+        print(temp)
+
+        
+        
+        
+    time.sleep(0.2)
+except:
+    gpio.cleanup()
+    cv.waitKey(0)
+    # [display]
+    cv.destroyAllWindows()
+exit()
