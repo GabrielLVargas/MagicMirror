@@ -2,6 +2,6 @@ Barbara Cardozo 16.00653-4
 Gabriel Vargas 15.00843-6
 Leonardo Faure 15.01631-5
 
-Um “Magic Mirror” é um espelho que para além de nos refletir, permite também mostrar várias informações que nos podem auxiliar no dia-a-dia como agenda, notícias, trânsito, estado do tempo, entre outras.
+Um "Guarda-roupa Ineterativo" o qual, com apenas uma foto, é possível ter uma noção de como ficaria as roupas em você.
 
 Fotos : https://drive.google.com/open?id=1ZXHBglUN6tdtHDWfkinyw49TF6ybT8Ed
