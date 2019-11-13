@@ -1,0 +1,32 @@
+import requests
+
+url = "http://api.openweathermap.org/data/2.5/weather"
+
+querystring = {"name":"Sao Caetano do Sul","APPID":"305e50cf8434707ead5c2939ba6c983b","id":"3449324","country":"BR"}
+
+headers = {
+    'cache-control': "no-cache",
+    'postman-token': "6e49bc69-3ca4-3c36-fb2a-d42301ca2408"
+    }
+
+response = requests.request("GET", url, headers=headers, params=querystring)
+
+temp = float(response.json()["main"]["temp"]) - 273.15
+
+
+url = "https://industrial.api.ubidots.com/api/v1.6/devices/controlador/temperatura/values/"
+
+payload = "{\n\t\"value\": %f\n}" % (temp)
+headers = {
+    'x-auth-token': "BBFF-CEOQq4cN2ykAX7BFVv9hLBjSCWAZXA",
+    'content-type': "application/json",
+    'cache-control': "no-cache",
+    'postman-token': "33c90948-f8d7-bdcc-ba78-3a7ca23b28f4"
+    }
+
+response = requests.request("POST", url, data=payload, headers=headers)
+
+print(response.text)
+
+
+print(temp)
