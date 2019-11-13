@@ -1,0 +1,19 @@
+import http.client
+
+conn = http.client.HTTPSConnection("industrial.api.ubidots.com")
+
+payload = "{\n\t\"value\": 30\n}"
+
+headers = {
+    'x-auth-token': "BBFF-CEOQq4cN2ykAX7BFVv9hLBjSCWAZXA",
+    'content-type': "application/json",
+    'cache-control': "no-cache",
+    'postman-token': "a922f982-8eaf-c4a1-47aa-e0d0f911dc30"
+    }
+
+conn.request("POST", "/api/v1.6/devices/controlador/temperatura/values/", payload, headers)
+
+res = conn.getresponse()
+data = res.read()
+
+print(data.decode("utf-8"))
