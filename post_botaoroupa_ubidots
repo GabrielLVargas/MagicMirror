@@ -1,0 +1,50 @@
+#! /usr/bin/python
+#-*- coding: utf-8 -*-
+import requests
+import RPi.GPIO as gpio
+import time
+gpio.setmode(gpio.BCM)
+gpio.setup(11, gpio.IN, pull_up_down = gpio.PUD_UP)
+soma = 0
+
+print("Começando a contagem")
+url = "https://industrial.api.ubidots.com/api/v1.6/devices/controlador/nivel/values/"
+
+payload = "{\n\t\"value\": %f\n}" % (soma)
+headers = {
+            'x-auth-token': "BBFF-CEOQq4cN2ykAX7BFVv9hLBjSCWAZXA",
+            'content-type': "application/json",
+            'cache-control': "no-cache",
+            'postman-token': "e5fbf09f-d42f-0816-737a-c8f0fbead533"
+            }
+
+response = requests.request("POST", url, data=payload, headers=headers)
+print(response.text)
+
+try:
+ while True:
+    if(gpio.input(11) == 1):
+        print("Botão off")
+    else:
+        soma += 1
+        print("Botao pressionado e incrementando valor")
+        url = "https://industrial.api.ubidots.com/api/v1.6/devices/controlador/nivel/values/"
+
+        payload = "{\n\t\"value\": %f\n}" % (soma)
+        headers = {
+            'x-auth-token': "BBFF-CEOQq4cN2ykAX7BFVv9hLBjSCWAZXA",
+            'content-type': "application/json",
+            'cache-control': "no-cache",
+            'postman-token': "e5fbf09f-d42f-0816-737a-c8f0fbead533"
+            }
+
+        response = requests.request("POST", url, data=payload, headers=headers)
+
+        print(response.text)
+        
+    time.sleep(0.2)
+except:
+    gpio.cleanup()
+exit()
+
+
