@@ -1,0 +1,15 @@
+import requests
+
+url = "http://api.openweathermap.org/data/2.5/weather"
+
+querystring = {"name":"Sao Caetano do Sul","APPID":"305e50cf8434707ead5c2939ba6c983b","id":"3449324","country":"BR"}
+
+headers = {
+    'cache-control': "no-cache",
+    'postman-token': "6e49bc69-3ca4-3c36-fb2a-d42301ca2408"
+    }
+
+response = requests.request("GET", url, headers=headers, params=querystring)
+
+temp = float(response.json()["main"]["temp"]) - 273.15
+print(temp)
